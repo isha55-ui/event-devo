@@ -1,14 +1,9 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "event-management-app"
-        CONTAINER_NAME = "event-container"
-    }
-
     stages {
 
-        stage('Clone Repository') {
+        stage('Clone Code') {
             steps {
                 git 'https://github.com/your-username/your-repo.git'
             }
@@ -16,36 +11,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t $IMAGE_NAME ."
-                }
+                bat 'docker build -t my-website .'
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                script {
-                    sh "docker stop $CONTAINER_NAME || true"
-                    sh "docker rm $CONTAINER_NAME || true"
-                }
+                bat 'docker stop my-container || exit 0'
+                bat 'docker rm my-container || exit 0'
             }
         }
 
-        stage('Run New Container') {
+        stage('Run Container') {
             steps {
-                script {
-                    sh "docker run -d -p 8080:80 --name $CONTAINER_NAME $IMAGE_NAME"
-                }
+                bat 'docker run -d -p 8082:80 --name my-container my-website'
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Deployment Successful!"
-        }
-        failure {
-            echo "❌ Deployment Failed!"
         }
     }
 }
