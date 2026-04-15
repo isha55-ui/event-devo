@@ -2,23 +2,25 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Build Docker Image') {
+        stage('Clone Code') {
             steps {
-                bat 'docker build -t my-website .'
+                git 'https://github.com/YOUR-USERNAME/YOUR-REPO.git'
             }
         }
 
-        stage('Stop Old Container') {
+        stage('Build Docker Image') {
             steps {
-                bat 'docker stop my-container || exit 0'
-                bat 'docker rm my-container || exit 0'
+                sh 'docker build -t my-website .'
             }
         }
 
         stage('Run Container') {
             steps {
-                bat 'docker run -d -p 8082:80 --name my-container my-website'
+                sh '''
+                docker stop my-container || true
+                docker rm my-container || true
+                docker run -d -p 8085:80 --name my-container my-website
+                '''
             }
         }
     }
